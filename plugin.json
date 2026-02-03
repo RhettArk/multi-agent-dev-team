@@ -1,0 +1,15 @@
+{
+  "name": "multi-agent-dev-team",
+  "version": "0.1.0",
+  "description": "Domain specialist agents that collaborate through shared knowledge to prevent codebase drift",
+  "author": "Rhett",
+  "skills": [
+    "dev-team",
+    "backend-architect",
+    "fastapi-specialist",
+    "code-reviewer"
+  ],
+  "requires": {
+    "claude-code": ">=1.0.0"
+  }
+}
