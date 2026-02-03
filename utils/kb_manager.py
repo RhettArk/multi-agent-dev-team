@@ -1,7 +1,6 @@
 # utils/kb_manager.py
 """Knowledge base initialization and management."""
 
-import os
 import json
 from pathlib import Path
 from typing import List

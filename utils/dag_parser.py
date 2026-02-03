@@ -1,7 +1,6 @@
 # utils/dag_parser.py
 """Simple DAG parser for MVP coordinator."""
 
-import json
 from datetime import datetime
 from typing import Dict, List
 
