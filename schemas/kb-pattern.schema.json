@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KB Pattern File Schema",
+  "description": "Structure for domain pattern markdown files",
+  "type": "object",
+  "properties": {
+    "domain": {
+      "type": "string",
+      "enum": ["backend", "frontend", "api-contracts", "docker", "matterport", "openai-agents"]
+    },
+    "patterns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "rationale": {"type": "string"},
+          "example": {"type": "string"},
+          "reference": {"type": "string"}
+        },
+        "required": ["name", "description"]
+      }
+    }
+  }
+}

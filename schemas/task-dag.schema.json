@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task DAG Schema",
+  "description": "Coordinator task orchestration graph",
+  "type": "object",
+  "properties": {
+    "plan_id": {"type": "string"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "tasks": {
+      "type": "object",
+      "patternProperties": {
+        "^task-[0-9]+$": {
+          "type": "object",
+          "properties": {
+            "id": {"type": "string"},
+            "title": {"type": "string"},
+            "specialist": {"type": "string"},
+            "status": {
+              "type": "string",
+              "enum": ["pending", "ready", "in-progress", "completed", "validated", "failed", "blocked"]
+            },
+            "dependencies": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "output_workspace": {"type": "string"},
+            "kb_updates": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "started_at": {"type": "string", "format": "date-time"},
+            "completed_at": {"type": "string", "format": "date-time"}
+          },
+          "required": ["id", "title", "specialist", "status"]
+        }
+      }
+    }
+  },
+  "required": ["plan_id", "tasks"]
+}
