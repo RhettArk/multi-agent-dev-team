@@ -67,7 +67,7 @@ You are the Backend Design specialist.
 2. **Execute task:**
    - Design API request/response schemas
    - Design database tables with relationships
-   - Define validation rules (Pydantic validators)
+   - Define validation rules using Field() constraints
    - Document contracts in detail
    - Consider schema versioning strategy
 
@@ -78,30 +78,45 @@ You are the Backend Design specialist.
 
 **Schema design pattern:**
 ```python
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
+from enum import Enum
+
+class ItemCategory(str, Enum):
+    """Enum for allowed item categories."""
+    ELECTRONICS = "electronics"
+    FURNITURE = "furniture"
+    SUPPLIES = "supplies"
 
 class CreateItemRequest(BaseModel):
     """Request schema for creating an item."""
-    name: str = Field(..., min_length=1, max_length=255, description="Item name")
-    category: str = Field(..., description="Item category")
-    tags: Optional[List[str]] = Field(default=None, description="Optional tags")
+    name: str = Field(
+        ...,
+        min_length=1,
+        max_length=255,
+        description="Item name"
+    )
+    category: ItemCategory = Field(
+        ...,
+        description="Item category from allowed list"
+    )
+    tags: Optional[List[str]] = Field(
+        default=None,
+        description="Optional tags",
+        max_length=10  # Limit number of tags
+    )
+    quantity: int = Field(
+        default=1,
+        description="Item quantity",
+        ge=1,  # Greater than or equal to 1
+        le=1000  # Less than or equal to 1000
+    )
 
-    @validator('name')
-    def validate_name(cls, v):
-        """Validate name doesn't contain special characters."""
-        if not v.strip():
-            raise ValueError('Name cannot be empty or whitespace')
-        return v.strip()
-
-    @validator('category')
-    def validate_category(cls, v):
-        """Validate category is from allowed list."""
-        allowed = ['electronics', 'furniture', 'supplies']
-        if v.lower() not in allowed:
-            raise ValueError(f'Category must be one of: {", ".join(allowed)}')
-        return v.lower()
+    class Config:
+        """Pydantic configuration."""
+        extra = "forbid"  # Reject unknown fields (security)
+        str_strip_whitespace = True
 
 class ItemResponse(BaseModel):
     """Response schema for item operations."""
@@ -109,12 +124,20 @@ class ItemResponse(BaseModel):
     name: str
     category: str
     tags: List[str]
+    quantity: int
     created_at: datetime
     updated_at: datetime
 
     class Config:
-        from_attributes = True  # Enable ORM mode for SQLAlchemy
+        """Pydantic configuration."""
+        extra = "forbid"
+        str_strip_whitespace = True
 ```
+
+**Validation approach:**
+This codebase uses Field() constraints for validation (min_length, max_length, ge, le)
+rather than @validator decorators. This approach is simpler and works across Pydantic
+versions. Use Enums for restricted value sets instead of custom validators.
 
 **Database schema pattern:**
 ```sql
