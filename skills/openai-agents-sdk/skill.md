@@ -78,10 +78,12 @@ You are the OpenAI Agents SDK Python specialist.
 **Agent implementation pattern:**
 ```python
 from openai import OpenAI
-from swarm import Agent, function_tool
+from agents import Agent, function_tool
+from agents.tool_context import ToolContext
+from typing import Dict, Any
 
 @function_tool
-def tool_name(param: str) -> dict:
+def tool_name(ctx: ToolContext, param: str) -> Dict[str, Any]:
     """Tool description for agent."""
     return {"result": "value"}
 
@@ -89,9 +91,11 @@ client = OpenAI()
 
 agent = Agent(
     name="Agent Name",
-    model="gpt-5-turbo",
+    model="gpt-4-turbo",  # or gpt-4o for latest model
     instructions="System prompt...",
-    functions=[tool_name]
+    tools=[tool_name]
+    # Optional: model_settings={"temperature": 0.7}
+    # Optional: hooks={"before_request": hook_fn}
 )
 ```
 
