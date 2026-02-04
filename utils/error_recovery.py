@@ -108,14 +108,14 @@ class ErrorRecovery:
             recovery_successful = await self.attempt_recovery(context)
 
             if recovery_successful:
-                print("  ✓ Recovery successful, will retry task")
+                print("  [OK] Recovery successful, will retry task")
                 self.task['retry_count'] = retry_count + 1
                 return True
             else:
-                print("  ✗ Recovery failed, escalating")
+                print("  [FAILED] Recovery failed, escalating")
                 return False
         else:
-            print(f"  ✗ Max retries ({self.max_retries}) exceeded, escalating")
+            print(f"  [FAILED] Max retries ({self.max_retries}) exceeded, escalating")
             return False
 
     async def attempt_recovery(self, context: Dict) -> bool:
