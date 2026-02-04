@@ -1,15 +1,15 @@
 # utils/auto_planner.py
 """Auto-planning module for coordinator."""
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 from datetime import datetime
 from pathlib import Path
-from utils.specialist_consultation import consult_all_relevant_specialists
+from specialist_consultation import consult_all_relevant_specialists
 
 
 async def auto_plan_feature(
     feature_description: str,
-    user_hints: Dict = None
+    user_hints: Optional[Dict] = None
 ) -> Dict:
     """
     Auto-generate implementation plan by consulting specialists.
@@ -44,14 +44,15 @@ async def auto_plan_feature(
     return plan
 
 
-def analyze_domains(feature_description: str, user_hints: Dict = None) -> List[str]:
+def analyze_domains(feature_description: str, user_hints: Optional[Dict] = None) -> List[str]:
     """
     Analyze feature description to determine affected domains.
 
     Uses keyword matching and user hints.
     """
-    if user_hints and 'domains' in user_hints:
-        return user_hints['domains']
+    hints = user_hints or {}
+    if hints and 'domains' in hints:
+        return hints['domains']
 
     domains = []
 
@@ -153,11 +154,11 @@ def synthesize_plan(
         if specialist not in specialist_responses:
             continue
 
-        response = specialist_responses[specialist]
+        _response = specialist_responses[specialist]
 
         # Extract task from specialist response
         # (In real implementation, parse response to extract task details)
-        task_title = extract_task_title(specialist, response)
+        task_title = extract_task_title(specialist, _response)
 
         task = {
             'id': f'task-{task_id}',
@@ -191,7 +192,7 @@ def synthesize_plan(
     return plan
 
 
-def extract_task_title(specialist: str, response: str) -> str:
+def extract_task_title(specialist: str, _response: str) -> str:
     """Extract task title from specialist response."""
     # Placeholder - in real implementation, parse response
     titles = {
@@ -210,7 +211,7 @@ def extract_task_title(specialist: str, response: str) -> str:
     return titles.get(specialist, f'{specialist} task')
 
 
-def extract_scope_from_responses(responses: Dict[str, str], scope_type: str) -> List[str]:
+def extract_scope_from_responses(_responses: Dict[str, str], scope_type: str) -> List[str]:
     """Extract scope boundaries from specialist responses."""
     # Placeholder - in real implementation, parse responses for scope mentions
     return [

@@ -2,8 +2,8 @@
 """Parallel task execution engine for coordinator."""
 
 import asyncio
-from typing import Dict, List, Set
-from utils.dag_parser import get_ready_tasks, update_task_status
+from typing import Dict, Set
+from dag_parser import get_ready_tasks, update_task_status
 
 class ParallelExecutor:
     """Executes tasks in parallel based on DAG dependencies."""
@@ -113,7 +113,7 @@ class ParallelExecutor:
 
         # Verify workspace file exists
         workspace_files = result.get('workspace_files', [])
-        for wf in workspace_files:
+        for _wf in workspace_files:
             # In real implementation, check file exists
             pass
 

@@ -1,7 +1,7 @@
 # utils/error_recovery.py
 """Adaptive error recovery for specialist task failures."""
 
-from typing import Dict, Optional
+from typing import Dict
 from enum import Enum
 
 class FailureType(Enum):
@@ -170,8 +170,8 @@ class ErrorRecovery:
     async def get_clarification(
         self,
         specialist: str,
-        question: str,
-        context: Dict
+        _question: str,
+        _context: Dict
     ) -> str:
         """
         Get clarification from prerequisite specialist.
@@ -185,7 +185,7 @@ class ErrorRecovery:
     def update_workspace_with_clarification(
         self,
         prerequisite_task_id: str,
-        clarification: str
+        _clarification: str
     ) -> None:
         """Update workspace file with clarification."""
         prerequisite_task = self.plan['tasks'][prerequisite_task_id]

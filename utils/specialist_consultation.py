@@ -20,7 +20,7 @@ async def consult_specialist(specialist_name: str, question: str, context: Dict)
     # In actual implementation, this would invoke the specialist via Task tool
     # For now, placeholder that constructs consultation prompt
 
-    prompt = f"""
+    _prompt = f"""
 You are being consulted during the planning phase.
 
 Context:

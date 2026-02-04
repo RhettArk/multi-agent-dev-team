@@ -3,7 +3,6 @@
 
 from typing import Dict, List
 from pathlib import Path
-import json
 
 
 class CheckpointValidator:
@@ -187,7 +186,7 @@ class CheckpointValidator:
         self.task['status'] = 'validated'
 
         # Transition dependent tasks to ready
-        for task_id, task in self.plan['tasks'].items():
+        for _task_id, task in self.plan['tasks'].items():
             if self.task_id in task.get('dependencies', []):
                 deps_satisfied = all(
                     self.plan['tasks'][dep]['status'] in ['completed', 'validated']
