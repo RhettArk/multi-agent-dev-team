@@ -3,7 +3,7 @@
 
 import asyncio
 from typing import Dict, Set
-from dag_parser import get_ready_tasks, update_task_status
+from .dag_parser import get_ready_tasks, update_task_status
 
 class ParallelExecutor:
     """Executes tasks in parallel based on DAG dependencies."""

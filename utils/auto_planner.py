@@ -4,7 +4,7 @@
 from typing import Dict, List, Optional
 from datetime import datetime
 from pathlib import Path
-from specialist_consultation import consult_all_relevant_specialists
+from .specialist_consultation import consult_all_relevant_specialists
 
 
 async def auto_plan_feature(
@@ -22,7 +22,7 @@ async def auto_plan_feature(
         Plan dict with tasks, dependencies, and scope boundaries
     """
     # Step 1: Analyze feature to determine domains affected
-    domains = analyze_domains(feature_description, user_hints)
+    domains = analyze_domains(feature_description, user_hints or {})
 
     # Step 2: Load KB state
     kb_state = load_kb_state()
