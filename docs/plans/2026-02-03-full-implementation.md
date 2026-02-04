@@ -2,7 +2,7 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Build complete multi-agent coordination plugin with 11 specialists (6 backend + 5 frontend), full DAG orchestration with parallelization, comprehensive knowledge base system, advanced checkpoints with peer review, adaptive error recovery, and auto-planning capabilities.
+**Goal:** Build complete multi-agent coordination plugin with 12 specialists (7 backend + 5 frontend), full DAG orchestration with parallelization, comprehensive knowledge base system, advanced checkpoints with peer review, adaptive error recovery, and auto-planning capabilities.
 
 **Architecture:** Claude Code plugin with coordinator orchestrating specialists via parallel Task tool invocations. KB stored in file system with three-part structure (patterns + decisions + dependencies). Workspace for ephemeral handoffs. Auto-planning phase with specialist consultation. Intent analysis for implicit dependencies.
 
@@ -355,13 +355,145 @@ git commit -m "feat: add Backend Design specialist"
 
 ---
 
-### Task 7: Code Reviewer Specialist
+### Task 7: Database Migration Specialist
+
+**Files:**
+- Create: `skills/db-migration/skill.md`
+
+**Step 1: Write specialist skill definition**
+
+```markdown
+# Database Migration Specialist
+
+**Domain Expertise:**
+- Schema migrations and version control (Alembic, Flyway, etc.)
+- Migration safety and rollback strategies
+- Data migration with zero downtime
+- Backward compatibility during schema evolution
+- Database refactoring patterns
+
+**Responsibilities:**
+1. Design and execute database migrations
+2. Ensure migrations are reversible (up/down)
+3. Validate data integrity before/after migrations
+4. Coordinate with Backend Design specialist on schema changes
+5. Update `kb/backend-patterns.md` with migration patterns
+
+**Pre-flight Checks:**
+```bash
+cat kb/backend-patterns.md
+cat kb/api-contracts.md 2>/dev/null || echo "No contracts yet"
+cat work/*-design.md 2>/dev/null || true
+git log --all --grep="migration" --oneline | head -5  # Check migration history
+```
+
+**Task Execution:**
+1. Read schema design from Backend Design specialist
+2. Create migration files with up/down methods
+3. Add data migration logic if needed
+4. Test migration on empty database
+5. Test rollback (down migration)
+6. Document migration strategy in KB
+
+**Post-work Updates:**
+```bash
+# Update migration patterns
+echo "## Migration: ${MIGRATION_NAME}" >> kb/backend-patterns.md
+echo "Strategy: ${STRATEGY}" >> kb/backend-patterns.md
+echo "Rollback: ${ROLLBACK_APPROACH}" >> kb/backend-patterns.md
+```
+
+---
+
+**System Prompt:**
+
+You are the Database Migration specialist.
+
+**Your expertise:**
+- Schema migrations (Alembic, raw SQL, ORM migrations)
+- Migration safety and reversibility
+- Zero-downtime deployments
+- Data migration strategies
+- Backward compatibility
+
+**Your workflow:**
+
+1. **Pre-flight:**
+   - Read `kb/backend-patterns.md` for current schema
+   - Read schema design from Backend Design specialist workspace
+   - Check decision log for migration precedent
+   - Review existing migrations for patterns
+
+2. **Execute task:**
+   - Create migration file with timestamp/version
+   - Write `upgrade()` function with schema changes
+   - Write `downgrade()` function for rollback
+   - Add data migration if needed (with safeguards)
+   - Test both upgrade and downgrade paths
+   - Document migration strategy
+
+3. **Post-work:**
+   - Update `kb/backend-patterns.md` with migration patterns
+   - Log decisions (migration strategy, rollback approach)
+   - Update dependency graph if migration affects multiple services
+
+**Migration pattern (Alembic example):**
+```python
+"""Add user_roles table
+
+Revision ID: 20260203_001
+Revises: 20260202_003
+Create Date: 2026-02-03 14:30:00
+"""
+from alembic import op
+import sqlalchemy as sa
+
+def upgrade():
+    op.create_table(
+        'user_roles',
+        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('user_id', sa.Integer, sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('role', sa.String(50), nullable=False),
+        sa.Column('created_at', sa.DateTime, server_default=sa.func.now())
+    )
+    op.create_index('idx_user_roles_user_id', 'user_roles', ['user_id'])
+
+def downgrade():
+    op.drop_index('idx_user_roles_user_id', table_name='user_roles')
+    op.drop_table('user_roles')
+```
+
+**Migration safety checklist:**
+- [ ] Migration is reversible (downgrade works)
+- [ ] Foreign key constraints handled
+- [ ] Indexes created for query performance
+- [ ] Default values provided for NOT NULL columns
+- [ ] Data migration tested on sample data
+- [ ] Rollback tested
+- [ ] No data loss in either direction
+
+**Output:**
+- Migration files (versioned)
+- Test results (upgrade + downgrade)
+- KB updates with migration strategy
+```
+
+**Step 2: Commit Database Migration specialist**
+
+```bash
+git add skills/db-migration/
+git commit -m "feat: add Database Migration specialist"
+```
+
+---
+
+### Task 8: Code Reviewer Specialist
 
 [Same as MVP Task 5 - already detailed]
 
 ---
 
-### Task 8: Docker Specialist
+### Task 9: Docker Specialist
 
 **Files:**
 - Create: `skills/docker-specialist/skill.md`
@@ -467,7 +599,7 @@ git commit -m "feat: add Docker specialist"
 
 ## Phase 3: All Frontend Specialists
 
-### Task 9: UI/UX Specialist
+### Task 10: UI/UX Specialist
 
 **Files:**
 - Create: `skills/ui-ux/skill.md`
@@ -572,7 +704,7 @@ git commit -m "feat: add UI/UX specialist"
 
 ---
 
-### Task 10: Code Quality Specialist (Frontend)
+### Task 11: Code Quality Specialist (Frontend)
 
 **Files:**
 - Create: `skills/code-quality-frontend/skill.md`
@@ -665,7 +797,7 @@ git commit -m "feat: add Code Quality (Frontend) specialist"
 
 ---
 
-### Task 11: Matterport SDK Specialist
+### Task 12: Matterport SDK Specialist
 
 **Files:**
 - Create: `skills/matterport-sdk/skill.md`
@@ -782,7 +914,7 @@ git commit -m "feat: add Matterport SDK specialist"
 
 ---
 
-### Task 12: JavaScript Specialist
+### Task 13: JavaScript Specialist
 
 **Files:**
 - Create: `skills/javascript-specialist/skill.md`
@@ -886,7 +1018,7 @@ git commit -m "feat: add JavaScript specialist"
 
 ---
 
-### Task 13: Chat Specialist
+### Task 14: Chat Specialist
 
 **Files:**
 - Create: `skills/chat-specialist/skill.md`
@@ -1014,7 +1146,7 @@ git commit -m "feat: add Chat specialist"
 
 ## Phase 4: Advanced Coordinator
 
-### Task 14: Auto-Planning Module
+### Task 15: Auto-Planning Module
 
 **Files:**
 - Create: `utils/auto_planner.py`
@@ -1364,7 +1496,7 @@ git commit -m "feat: add auto-planning module with specialist consultation"
 
 ---
 
-### Task 15: Parallel Execution Engine
+### Task 16: Parallel Execution Engine
 
 **Files:**
 - Create: `utils/parallel_executor.py`
@@ -1532,7 +1664,7 @@ git commit -m "feat: add parallel execution engine for DAG orchestration"
 
 ---
 
-### Task 16: Advanced Checkpoints
+### Task 17: Advanced Checkpoints
 
 **Files:**
 - Create: `utils/checkpoint_validator.py`
@@ -1764,7 +1896,7 @@ git commit -m "feat: add advanced checkpoint validator with peer review"
 
 ---
 
-### Task 17: Error Recovery System
+### Task 18: Error Recovery System
 
 **Files:**
 - Create: `utils/error_recovery.py`
@@ -2067,7 +2199,7 @@ git commit -m "feat: add adaptive error recovery system with loop-back and escal
 
 ---
 
-### Task 18: Full Coordinator Skill
+### Task 19: Full Coordinator Skill
 
 **Files:**
 - Create: `skills/dev-team/skill.md` (full version, replacing MVP)
@@ -2288,7 +2420,7 @@ git commit -m "feat: upgrade coordinator to full version with auto-planning and 
 
 ## Phase 5: Testing & Documentation
 
-### Task 19: Integration Tests (Full System)
+### Task 20: Integration Tests (Full System)
 
 **Files:**
 - Create: `tests/test_full_system.py`
@@ -2300,11 +2432,11 @@ git commit -m "feat: upgrade coordinator to full version with auto-planning and 
 
 ---
 
-### Task 20: Full Documentation
+### Task 21: Full Documentation
 
 **Files:**
 - Create/Update: `docs/USER_GUIDE.md` (full version)
-- Create/Update: `docs/SPECIALIST_GUIDE.md` (all 11 specialists)
+- Create/Update: `docs/SPECIALIST_GUIDE.md` (all 12 specialists)
 - Create/Update: `docs/ARCHITECTURE.md` (full system)
 - Create: `docs/TROUBLESHOOTING.md`
 - Create: `docs/EXAMPLES.md`
@@ -2315,7 +2447,7 @@ git commit -m "feat: upgrade coordinator to full version with auto-planning and 
 
 ## Phase 6: Deployment
 
-### Task 21: Final Packaging
+### Task 22: Final Packaging
 
 **Step 1: Update plugin.json with all specialists**
 
@@ -2331,6 +2463,7 @@ git commit -m "feat: upgrade coordinator to full version with auto-planning and 
     "backend-architect",
     "fastapi-specialist",
     "backend-design",
+    "db-migration",
     "code-reviewer",
     "docker-specialist",
     "ui-ux",
@@ -2353,14 +2486,14 @@ git commit -m "feat: upgrade coordinator to full version with auto-planning and 
 **Step 3: Final commit and tag**
 
 ```bash
-git tag -a v1.0.0 -m "Full release: 11 specialists with auto-planning, parallel execution, and error recovery"
+git tag -a v1.0.0 -m "Full release: 12 specialists with auto-planning, parallel execution, and error recovery"
 ```
 
 ---
 
 ## Success Criteria (Full System)
 
-✅ All 11 specialists implemented with system prompts
+✅ All 12 specialists implemented with system prompts
 ✅ Auto-planning module with specialist consultation
 ✅ Parallel DAG execution engine
 ✅ Advanced checkpoints with peer review
@@ -2387,7 +2520,7 @@ git tag -a v1.0.0 -m "Full release: 11 specialists with auto-planning, parallel 
 **Milestones:**
 - M1: Foundation complete (Tasks 1-2)
 - M2: MVP specialists working (Tasks 3-8, subset)
-- M3: All 11 specialists implemented (Tasks 3-13)
+- M3: All 12 specialists implemented (Tasks 3-14)
 - M4: Advanced coordinator features (Tasks 14-18)
 - M5: Full system validated (Tasks 19-21)
 
@@ -2417,6 +2550,7 @@ multi-agent-dev-team/
 │   ├── backend-architect/skill.md
 │   ├── fastapi-specialist/skill.md
 │   ├── backend-design/skill.md
+│   ├── db-migration/skill.md
 │   ├── code-reviewer/skill.md
 │   ├── docker-specialist/skill.md
 │   ├── ui-ux/skill.md
