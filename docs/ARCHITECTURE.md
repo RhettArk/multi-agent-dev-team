@@ -2,76 +2,363 @@
 
 ## Overview
 
-The Multi-Agent Dev Team plugin implements a coordinator-specialist pattern where a central coordinator agent manages a team of specialized agents to complete complex development tasks.
+The Multi-Agent Dev Team plugin implements a coordinator-specialist pattern with advanced auto-planning, parallel execution, intelligent checkpoints, and adaptive error recovery.
 
 **Key Principles:**
-- **Single Coordinator**: One agent (Coordinator) manages all planning and task assignment
-- **Specialized Agents**: Each specialist has a focused domain (Backend, Frontend, QA, etc.)
-- **Shared Knowledge**: All agents access a common knowledge base
-- **Checkpoint System**: User approval at major milestones
-- **Workspace Tracking**: All work is logged and trackable
+- **Single Coordinator**: One coordinator orchestrates 12 specialized agents
+- **Auto-Planning**: Coordinator consults specialists to generate implementation plans
+- **Parallel Execution**: Independent tasks run concurrently via DAG
+- **Advanced Checkpoints**: Validation, peer review, and KB sync after each task
+- **Error Recovery**: Automatic classification and recovery attempts
+- **Shared Knowledge Base**: All agents sync patterns, decisions, and dependencies
+- **Pre-Planning Cleanup**: Dead code removal before implementation
+
+**Architecture Layers:**
+1. **Coordination Layer**: 4-phase coordinator workflow
+2. **Planning Layer**: Auto-planning with specialist consultation
+3. **Execution Layer**: Parallel DAG execution engine
+4. **Validation Layer**: Advanced checkpoint system
+5. **Recovery Layer**: Adaptive error recovery
+6. **Knowledge Layer**: Shared KB preventing drift
 
 ## Components
 
-### 1. Coordinator Agent
+### 1. Coordinator Agent (4-Phase Workflow)
 
-**Location:** `specialists/coordinator/skill.md`
+**Location:** `skills/dev-team/skill.md`
 
 **Responsibilities:**
-- Analyze user requests
-- Create execution plans
-- Assign tasks to specialists
-- Track progress and state
-- Handle checkpoints and user approval
-- Coordinate between specialists
+- Phase 1: Pre-planning cleanup (invoke Code Reviewer)
+- Phase 2: Auto-planning (consult specialists)
+- Phase 3: Parallel execution (DAG-based)
+- Phase 4: Completion (summary + cleanup)
 
-**Key Features:**
-- Reads specialist capabilities from `specialists/` directory
-- Maintains task queue and execution state
-- Manages knowledge base updates
-- Handles errors and retries
+**Phase 1: Pre-Planning Cleanup**
+```python
+# Invoke code-reviewer for pre-planning cleanup
+cleanup_result = await invoke_specialist(
+    specialist='code-reviewer',
+    task='Pre-planning cleanup: scan for dead/stale code'
+)
 
-**Planning Process:**
+# Present cleanup findings to user for approval
+if cleanup_result['issues_found']:
+    present_cleanup_report(cleanup_result)
+    await wait_for_user_approval()
 ```
-User Request → Analyze → Break into tasks → Assign specialists → Create checkpoints → Get approval
+
+**Phase 2: Auto-Planning**
+```python
+from utils.auto_planner import auto_plan_feature
+
+# Auto-generate plan by consulting specialists
+plan = await auto_plan_feature(
+    feature_description=user_input,
+    user_hints=parse_user_hints(user_input)
+)
+
+# Present plan to user for approval
+present_plan(plan)
+user_approved = await wait_for_user_approval()
 ```
 
-### 2. Specialist Agents
+**Phase 3: Parallel Execution**
+```python
+from utils.parallel_executor import execute_plan_parallel
+from utils.checkpoint_validator import run_checkpoint
+from utils.error_recovery import handle_task_failure
 
-**Location:** `specialists/*/skill.md`
+# Execute plan with parallel orchestration
+updated_plan = await execute_plan_parallel(plan)
+```
 
-**Active Specialists:**
-- **Architect**: System design, code structure, refactoring
-- **Backend**: Server-side development, APIs, databases
-- **Frontend**: UI/UX, components, styling
-- **QA**: Testing, validation, bug detection
-- **DevOps**: Deployment, CI/CD, infrastructure
+**Phase 4: Completion**
+```python
+# Show user what was accomplished
+summary = {
+    'tasks_completed': count_completed_tasks(plan),
+    'kb_updates': collect_kb_updates(plan),
+    'workspace_files': collect_workspace_files(plan)
+}
+
+present_summary(summary)
+
+# Offer workspace cleanup
+if await ask_user("Clean up workspace files?"):
+    cleanup_workspace()
+```
+
+### 2. Specialist Agents (12 Total)
+
+**Location:** `skills/*/skill.md`
+
+**Backend Specialists (5):**
+1. **Backend Architect**: System design, architecture patterns
+2. **Backend Design**: API schemas, data structures
+3. **FastAPI Specialist**: Endpoints, routing, middleware
+4. **Database Migration**: Schema changes, migrations
+5. **OpenAI Agents SDK**: Agent creation, tool definitions
+
+**Frontend Specialists (5):**
+6. **UI/UX Specialist**: Component design, user flows
+7. **JavaScript Specialist**: Core JS, async patterns
+8. **Code Quality (Frontend)**: Refactoring, simplification
+9. **Chat Specialist**: Chat UI, message streaming
+10. **Matterport SDK**: 3D viewer integration
+
+**Cross-Cutting (2):**
+11. **Code Reviewer**: Dead code detection, pre-planning cleanup
+12. **Docker Specialist**: Containerization, deployment
 
 **Specialist Structure:**
 Each specialist has:
 - Role and capabilities
 - Tools and technologies
 - Working style
+- KB usage patterns
 - Coordination guidelines
 - Example tasks
 
 **Invocation:**
-Specialists are invoked by the Coordinator as tools/sub-agents to complete assigned tasks.
+Specialists are invoked by the Coordinator as sub-agents with full access to:
+- KB files (read/write)
+- Workspace files (read/write)
+- Context from previous tasks
+- Peer specialist outputs
 
-### 3. Knowledge Base
+### 3. Auto-Planning Module
 
-**Location:** `knowledge-base/`
+**Location:** `utils/auto_planner.py`
+
+**Purpose:** Generate implementation plans by consulting specialists.
+
+**How it works:**
+1. Parse user's feature description
+2. Identify domains involved (backend, frontend, etc.)
+3. Consult relevant specialists for their input
+4. Synthesize plan with:
+   - Task breakdown
+   - Dependencies (explicit + inferred)
+   - Scope boundaries (what to change, what NOT to change)
+   - Success criteria
+
+**Example:**
+```python
+from utils.auto_planner import auto_plan_feature
+
+plan = await auto_plan_feature(
+    feature_description="Add JWT authentication",
+    user_hints=["backend focus", "keep existing session system"]
+)
+
+# Returns:
+# {
+#   'tasks': {
+#     't-001': {
+#       'specialist': 'backend-architect',
+#       'description': 'Design JWT auth flow',
+#       'depends_on': []
+#     },
+#     't-002': {
+#       'specialist': 'backend-design',
+#       'description': 'Design auth API schemas',
+#       'depends_on': ['t-001']
+#     },
+#     ...
+#   },
+#   'scope': {
+#     'change': ['backend/auth/*', 'backend/main.py'],
+#     'preserve': ['backend/sessions/*']
+#   }
+# }
+```
+
+**Specialist Consultation:**
+The planner asks specialists:
+- "What tasks are needed in your domain for this feature?"
+- "What dependencies do you have on other domains?"
+- "What should be preserved vs changed?"
+
+This ensures plans are:
+- Technically sound
+- Complete (no missing steps)
+- Properly scoped
+- Realistically sequenced
+
+---
+
+### 4. Parallel Execution Engine
+
+**Location:** `utils/parallel_executor.py`
+
+**Purpose:** Execute tasks in parallel via DAG.
+
+**How it works:**
+1. Parse plan into Directed Acyclic Graph (DAG)
+2. Identify ready tasks (no incomplete dependencies)
+3. Execute up to 3 tasks concurrently
+4. Wait for batch completion
+5. Repeat until all tasks done
+
+**Example:**
+```python
+from utils.parallel_executor import execute_plan_parallel
+
+# Plan with dependencies:
+# t-001: no deps
+# t-002: depends on t-001
+# t-003: depends on t-001
+# t-004: depends on t-002, t-003
+
+updated_plan = await execute_plan_parallel(plan)
+
+# Execution:
+# Batch 1: [t-001]
+# Batch 2: [t-002, t-003] (parallel)
+# Batch 3: [t-004]
+```
+
+**DAG Parser:**
+```python
+from utils.dag_parser import parse_task_list, get_ready_tasks
+
+dag = parse_task_list(plan['tasks'])
+ready_tasks = get_ready_tasks(dag)  # Tasks with no incomplete deps
+```
+
+**Concurrency Control:**
+- Max 3 concurrent tasks (configurable)
+- Respects dependencies automatically
+- Handles task failures gracefully
+- Updates DAG after each completion
+
+---
+
+### 5. Advanced Checkpoint System
+
+**Location:** `utils/checkpoint_validator.py`
+
+**Purpose:** Validate tasks with automatic checks and peer review.
+
+**Checkpoint Phases:**
+1. **Automatic Validation**: Syntax, structure, imports
+2. **Peer Review**: Relevant specialists check the work
+3. **KB Sync**: Patterns and decisions saved
+4. **User Approval**: Optional intervention
+
+**Example:**
+```python
+from utils.checkpoint_validator import run_checkpoint
+
+checkpoint_result = await run_checkpoint(
+    task_id='t-003',
+    task_output=fastapi_output,
+    plan=plan
+)
+
+# Returns:
+# {
+#   'validation': {
+#     'syntax': 'pass',
+#     'structure': 'pass',
+#     'imports': 'pass'
+#   },
+#   'peer_review': {
+#     'backend-design': 'Schemas implemented correctly',
+#     'code-reviewer': 'Simplified error handling'
+#   },
+#   'kb_sync': {
+#     'patterns_updated': ['backend-patterns.md'],
+#     'decisions_logged': ['Used bcrypt cost factor 12']
+#   },
+#   'status': 'pass'
+# }
+```
+
+**Validation Types:**
+- **Syntax**: Check for Python/JS syntax errors
+- **Structure**: Verify expected files/functions exist
+- **Imports**: Check for missing dependencies
+- **Style**: Ensure conventions followed
+
+**Peer Review:**
+The system invokes peer specialists to review:
+- Backend Architect reviews FastAPI implementation
+- Code Reviewer checks all implementations
+- UI/UX reviews frontend work
+
+---
+
+### 6. Error Recovery System
+
+**Location:** `utils/error_recovery.py`
+
+**Purpose:** Classify failures and attempt automatic recovery.
+
+**Failure Classification:**
+1. **FIXABLE**: Can be resolved by clarifying with prerequisite specialist
+2. **FUNDAMENTAL**: Requires user intervention or plan modification
+
+**Recovery Process:**
+```python
+from utils.error_recovery import handle_task_failure
+
+recovery_result = await handle_task_failure(
+    task_id='t-003',
+    error=error,
+    plan=plan
+)
+
+# For FIXABLE:
+# 1. Identify prerequisite task/specialist
+# 2. Loop back for clarification
+# 3. Update workspace with fix
+# 4. Retry failed task
+
+# For FUNDAMENTAL:
+# 1. Block dependent tasks
+# 2. Escalate to user with context
+# 3. Wait for user guidance
+# 4. Adjust plan accordingly
+```
+
+**Example Recovery:**
+```
+Task: FastAPI Specialist implements /auth/login
+Error: "Design unclear about token storage"
+
+Recovery:
+→ Classify as FIXABLE
+→ Loop back to Backend Architect
+→ Get clarification: "Store tokens in Redis with TTL"
+→ Update work/auth-design.md
+→ Retry FastAPI task
+→ Success
+```
+
+**Adaptive Strategies:**
+- Fixable errors: Loop back to prerequisite (max 2 attempts)
+- Fundamental errors: Escalate immediately
+- Unknown errors: Treat as fundamental (safe default)
+
+---
+
+### 7. Knowledge Base
+
+**Location:** `kb/`
 
 **Files:**
-- `project_context.json`: Current project state and details
-- `decisions.json`: Technical decisions made during work
-- `learnings.json`: Patterns and solutions discovered
+- `kb/backend-patterns.md`: Backend conventions
+- `kb/frontend-patterns.md`: Frontend conventions
+- `kb/api-contracts.md`: API schemas and contracts
+- `kb/decisions.log`: Append-only decision history
+- `kb/dependencies.json`: Cross-domain dependency graph
 
 **Purpose:**
-- Persist understanding across conversations
-- Enable specialists to make informed decisions
-- Track project evolution over time
-- Share knowledge between specialists
+- Prevent drift across specialist work
+- Share patterns and conventions
+- Track dependencies between domains
+- Log technical decisions with rationale
 
 **Schema Examples:**
 
@@ -202,39 +489,62 @@ Specialists are invoked by the Coordinator as tools/sub-agents to complete assig
 
 ## Data Flow
 
-### Request Flow
+### Complete Request Flow (4 Phases)
+
 ```
-User: /devteam <request>
+User: /dev-team "Add JWT authentication"
   ↓
-Plugin Entry Point (index.js)
+Phase 1: Pre-Planning Cleanup
   ↓
-Coordinator Agent Invoked
+1. Coordinator invokes Code Reviewer specialist
+2. Code Reviewer scans for dead code
+3. Present findings to user
+4. User approves cleanup
   ↓
-1. Load knowledge base
-2. Analyze request
-3. Create plan with tasks and checkpoints
-4. Show plan to user
+Phase 2: Auto-Planning
   ↓
-User Approves Plan
+5. Coordinator calls auto_plan_feature()
+6. Auto-planner identifies domains (backend, frontend)
+7. Auto-planner consults specialists:
+   - Backend Architect: "Design auth flow"
+   - Backend Design: "Design auth schemas"
+   - FastAPI Specialist: "Implement endpoints"
+   - Code Reviewer: "Review implementation"
+8. Synthesize plan with dependencies
+9. Present plan to user
+10. User approves plan
   ↓
-5. For each task:
-   a. Update workspace (task status = in_progress)
-   b. Invoke specialist agent as tool
-   c. Specialist executes task
-   d. Update workspace (task status = completed)
-   e. Log to task_history.json
-   f. Check for checkpoint
+Phase 3: Parallel Execution
   ↓
-6. If checkpoint:
-   a. Pause execution
-   b. Show progress summary
-   c. Ask user to approve continuation
-   d. If approved, continue; else stop
+11. parallel_executor.execute_plan_parallel(plan)
+12. Loop:
+    a. dag_parser.get_ready_tasks(plan)
+    b. Execute batch (up to 3 concurrent):
+       - Invoke specialist
+       - Specialist completes task
+       - Run checkpoint:
+         * Automatic validation
+         * Peer review
+         * KB sync
+         * User approval (optional)
+    c. Update DAG with completions
+    d. If task fails:
+       * error_recovery.handle_task_failure()
+       * Classify failure (FIXABLE vs FUNDAMENTAL)
+       * Attempt recovery if FIXABLE
+       * Escalate if FUNDAMENTAL
+    e. Repeat until all tasks complete
   ↓
-7. All tasks complete:
-   a. Update knowledge base with learnings
-   b. Show completion summary
-   c. Clean up workspace
+Phase 4: Completion
+  ↓
+13. Collect summary data:
+    - Tasks completed
+    - KB updates made
+    - Workspace files created
+14. Present summary to user
+15. Offer workspace cleanup
+16. Log session to KB
+17. Done
 ```
 
 ### Knowledge Base Flow
@@ -280,58 +590,69 @@ Get user approval
 Continue or stop based on approval
 ```
 
-## MVP Limitations
+## Key Features Implemented
 
-### Current Scope (MVP)
-- **5 specialists**: Architect, Backend, Frontend, QA, DevOps
-- **Sequential execution**: Tasks run one at a time
-- **File-based storage**: JSON files in workspace and knowledge base
-- **Manual checkpoints**: Defined in plan, user approval required
-- **Single user**: No multi-user coordination
+### Auto-Planning
+- ✅ Specialist consultation during planning
+- ✅ Automatic dependency inference
+- ✅ Scope boundary detection
+- ✅ User hint parsing for guidance
 
-### What's NOT in MVP
-- ❌ Parallel task execution
-- ❌ Dynamic specialist creation
-- ❌ Advanced conflict resolution
-- ❌ Persistent database storage
-- ❌ Multi-project support
-- ❌ Progress visualization UI
-- ❌ Automatic rollback on errors
-- ❌ Specialist learning/improvement
+### Parallel Execution
+- ✅ DAG-based task orchestration
+- ✅ Up to 3 concurrent tasks
+- ✅ Automatic dependency management
+- ✅ Dynamic batch execution
 
-### Known Limitations
-1. **No state persistence across Claude restarts**: Workspace is in-memory unless explicitly saved
-2. **Limited error handling**: Failures may require manual intervention
-3. **No task dependencies**: Coordinator must sequence tasks correctly
-4. **Fixed checkpoint logic**: Cannot dynamically adjust checkpoints
-5. **No resource estimation**: No time/complexity predictions
+### Advanced Checkpoints
+- ✅ Automatic validation (syntax, structure, imports)
+- ✅ Peer review by specialists
+- ✅ KB sync after each task
+- ✅ Optional user intervention
+
+### Error Recovery
+- ✅ Failure classification (FIXABLE vs FUNDAMENTAL)
+- ✅ Automatic recovery attempts
+- ✅ Loop back to prerequisite specialists
+- ✅ User escalation when needed
+
+### Knowledge Base
+- ✅ Pattern files (backend, frontend, API contracts)
+- ✅ Decision logging with rationale
+- ✅ Dependency tracking across domains
+- ✅ Automatic initialization
+
+### Pre-Planning Cleanup
+- ✅ Dead code detection
+- ✅ Unused import scanning
+- ✅ Deprecated pattern identification
+- ✅ User approval before planning
 
 ## Future Enhancements
 
-### Phase 2: Enhanced Execution
-- **Parallel tasks**: Run independent tasks simultaneously
-- **Task dependencies**: Define explicit dependencies between tasks
-- **Smart checkpoints**: Automatically insert checkpoints based on complexity
-- **Error recovery**: Automatic retry with different approaches
-- **Progress estimation**: Predict time and effort for tasks
-
-### Phase 3: Intelligence
+### Phase 2: Intelligence
 - **Learning specialists**: Specialists improve from past work
 - **Pattern recognition**: Auto-detect common task patterns
 - **Proactive suggestions**: "I noticed X, should I also do Y?"
 - **Quality metrics**: Track and report on code quality improvements
 
-### Phase 4: Collaboration
+### Phase 3: Collaboration
 - **Multi-user support**: Multiple users working on same project
 - **Team memory**: Shared knowledge across user sessions
 - **Cross-project insights**: Apply learnings from one project to another
 - **Human specialist integration**: Allow human experts as specialists
 
-### Phase 5: Ecosystem
+### Phase 4: Ecosystem
 - **Plugin marketplace**: Share custom specialists
 - **Integration APIs**: Connect with external tools (Jira, GitHub, etc.)
 - **Visual workflow editor**: Design custom coordination patterns
 - **Analytics dashboard**: Insights into team productivity
+
+### Phase 5: Advanced Planning
+- **Multi-path planning**: Generate alternative plans
+- **Cost estimation**: Predict time and effort
+- **Risk analysis**: Identify high-risk tasks
+- **Rollback planning**: Automatic undo strategies
 
 ## Design Decisions
 

@@ -1,8 +1,413 @@
 # Specialist Guide
 
+## Overview
+
+The Multi-Agent Dev Team plugin includes 12 specialized agents, each with focused expertise. This guide documents all specialists and how to create new ones.
+
+## All Specialists (12)
+
+### Backend Specialists (5)
+
+#### 1. Backend Architect
+**Role:** System design, architecture patterns, multi-agent coordination
+
+**Capabilities:**
+- Design system architectures and module structures
+- Define integration patterns between components
+- Coordinate multi-agent workflows
+- Establish architectural patterns and conventions
+
+**When to use:**
+- Designing new features or systems
+- Planning major refactors
+- Setting architectural direction
+- Resolving cross-domain issues
+
+**KB Usage:**
+- Reads: `backend-patterns.md`, `api-contracts.md`, `decisions.log`
+- Writes: Architecture decisions, design patterns
+
+---
+
+#### 2. Backend Design
+**Role:** API schemas, data structures, contract design
+
+**Capabilities:**
+- Design Pydantic models and schemas
+- Define API request/response contracts
+- Structure data validation rules
+- Design error responses
+
+**When to use:**
+- Defining new API endpoints
+- Updating data models
+- Designing database schemas
+- Creating validation logic
+
+**KB Usage:**
+- Reads: `api-contracts.md`, `backend-patterns.md`
+- Writes: Schema definitions, contract updates to `api-contracts.md`
+
+---
+
+#### 3. FastAPI Specialist
+**Role:** FastAPI endpoints, routing, middleware implementation
+
+**Capabilities:**
+- Implement FastAPI endpoints
+- Configure routing and middleware
+- Handle SSE streaming
+- Implement dependency injection
+
+**When to use:**
+- Creating new API endpoints
+- Implementing authentication/middleware
+- Setting up routing logic
+- Adding SSE/WebSocket endpoints
+
+**KB Usage:**
+- Reads: `api-contracts.md` (implements contracts)
+- Writes: Implementation decisions, patterns discovered
+
+---
+
+#### 4. Database Migration Specialist
+**Role:** Schema changes, migrations, data integrity
+
+**Capabilities:**
+- Design database migrations
+- Handle schema evolution
+- Ensure data integrity during changes
+- Write migration scripts (Supabase SQL)
+
+**When to use:**
+- Adding/modifying database tables
+- Changing column types or constraints
+- Data migrations
+- Database refactoring
+
+**KB Usage:**
+- Reads: `backend-patterns.md`, `dependencies.json`
+- Writes: Migration decisions, schema evolution notes
+
+---
+
+#### 5. OpenAI Agents SDK Specialist
+**Role:** Agent creation, tool definitions, streaming
+
+**Capabilities:**
+- Create OpenAI agents with proper configuration
+- Define @function_tool decorated tools
+- Implement streaming responses
+- Handle agent orchestration
+
+**When to use:**
+- Adding new AI agents
+- Creating agent tools
+- Implementing streaming logic
+- Debugging agent behavior
+
+**KB Usage:**
+- Reads: `backend-patterns.md`
+- Writes: Agent patterns, tool design decisions
+
+---
+
+### Frontend Specialists (5)
+
+#### 6. UI/UX Specialist
+**Role:** Component design, user flows, accessibility
+
+**Capabilities:**
+- Design UI component structure
+- Plan user interaction flows
+- Ensure accessibility (WCAG)
+- Design responsive layouts
+
+**When to use:**
+- Creating new UI features
+- Redesigning user flows
+- Improving accessibility
+- Planning component hierarchy
+
+**KB Usage:**
+- Reads: `frontend-patterns.md`
+- Writes: UI patterns, design decisions
+
+---
+
+#### 7. JavaScript Specialist
+**Role:** Core JavaScript, async patterns, module organization
+
+**Capabilities:**
+- Implement JavaScript logic
+- Handle async/await patterns
+- Organize module structure
+- Optimize performance
+
+**When to use:**
+- Implementing business logic
+- Refactoring JavaScript code
+- Fixing JavaScript bugs
+- Optimizing performance
+
+**KB Usage:**
+- Reads: `frontend-patterns.md`, `api-contracts.md`
+- Writes: JavaScript patterns, module organization decisions
+
+---
+
+#### 8. Code Quality (Frontend)
+**Role:** Refactoring, simplification, frontend best practices
+
+**Capabilities:**
+- Refactor complex frontend code
+- Simplify component logic
+- Remove code duplication
+- Apply frontend best practices
+
+**When to use:**
+- Cleaning up legacy code
+- Simplifying complex components
+- Removing duplication
+- Improving maintainability
+
+**KB Usage:**
+- Reads: `frontend-patterns.md`
+- Writes: Refactoring patterns, anti-patterns to avoid
+
+---
+
+#### 9. Chat Specialist
+**Role:** Chat UI, message streaming, real-time features
+
+**Capabilities:**
+- Implement chat interfaces
+- Handle SSE message streaming
+- Manage chat state
+- Parse and render markdown
+
+**When to use:**
+- Building/updating chat UI
+- Implementing message streaming
+- Adding chat features
+- Debugging chat issues
+
+**KB Usage:**
+- Reads: `frontend-patterns.md`, `api-contracts.md`
+- Writes: Chat patterns, streaming implementation notes
+
+---
+
+#### 10. Matterport SDK Specialist
+**Role:** 3D viewer integration, camera positioning, scene interaction
+
+**Capabilities:**
+- Integrate Matterport SDK
+- Control camera positioning
+- Add 3D tags/mattertags
+- Handle scene events
+
+**When to use:**
+- Adding Matterport features
+- Debugging 3D viewer issues
+- Implementing navigation in 3D
+- Adding scene interactivity
+
+**KB Usage:**
+- Reads: `frontend-patterns.md`
+- Writes: Matterport integration patterns
+
+---
+
+### Cross-Cutting Specialists (2)
+
+#### 11. Code Reviewer
+**Role:** Dead code detection, simplification, anti-pattern identification
+
+**Capabilities:**
+- Scan for unused code (imports, functions, classes)
+- Identify deprecated patterns
+- Find dead code paths
+- Suggest simplifications
+
+**When to use:**
+- Pre-planning cleanup (automatic)
+- Post-implementation review
+- Periodic codebase cleanup
+- Before major refactors
+
+**KB Usage:**
+- Reads: All KB files to identify unused patterns
+- Writes: Cleanup recommendations, anti-patterns found
+
+---
+
+#### 12. Docker Specialist
+**Role:** Containerization, environment config, deployment
+
+**Capabilities:**
+- Create/update Dockerfiles
+- Configure docker-compose
+- Manage environment variables
+- Design multi-stage builds
+
+**When to use:**
+- Containerizing applications
+- Updating deployment config
+- Adding new services
+- Optimizing container builds
+
+**KB Usage:**
+- Reads: `backend-patterns.md`, `dependencies.json`
+- Writes: Deployment patterns, configuration decisions
+
+---
+
+## Cross-Specialist Coordination Patterns
+
+### Pattern 1: Design → Implementation → Review
+
+**Flow:**
+```
+Backend Architect → Backend Design → FastAPI Specialist → Code Reviewer
+```
+
+**Example:** Adding a new API endpoint
+1. Backend Architect: Design overall architecture
+2. Backend Design: Define request/response schemas
+3. FastAPI Specialist: Implement the endpoint
+4. Code Reviewer: Simplify and validate
+
+**KB Coordination:**
+- Architect writes to `decisions.log`
+- Design writes to `api-contracts.md`
+- FastAPI reads contracts, writes implementation notes
+- Reviewer reads all, writes simplification suggestions
+
+---
+
+### Pattern 2: Parallel Frontend + Backend
+
+**Flow:**
+```
+         Backend Architect
+         /              \
+Backend Design    UI/UX Specialist
+         |              |
+  FastAPI Specialist  JavaScript Specialist
+         \              /
+          Code Reviewer
+```
+
+**Example:** Adding user authentication
+- Backend Architect + UI/UX run in parallel
+- Backend Design + JavaScript Specialist run in parallel
+- Code Reviewer integrates and validates both
+
+**KB Coordination:**
+- Both write to `api-contracts.md` (API contract)
+- Both write to `dependencies.json` (frontend ↔ backend)
+- Code Reviewer ensures consistency
+
+---
+
+### Pattern 3: Migration with Fallback
+
+**Flow:**
+```
+DB Migration Specialist → Backend Design → FastAPI Specialist → Code Reviewer
+                       ↓ (if fails)
+                Backend Architect (clarify design)
+```
+
+**Example:** Changing database schema
+1. DB Migration proposes schema change
+2. If unclear, Backend Architect clarifies
+3. Backend Design updates models
+4. FastAPI updates endpoints
+5. Code Reviewer validates
+
+**KB Coordination:**
+- Migration writes to `decisions.log` (why schema changed)
+- Design updates `api-contracts.md` (new models)
+- Dependencies tracked in `dependencies.json`
+
+---
+
+### Pattern 4: 3D Feature Implementation
+
+**Flow:**
+```
+UI/UX Specialist → Matterport SDK Specialist → JavaScript Specialist → Code Quality
+```
+
+**Example:** Adding 3D navigation markers
+1. UI/UX: Design marker appearance and behavior
+2. Matterport SDK: Implement mattertag creation
+3. JavaScript: Connect to backend navigation data
+4. Code Quality: Refactor for maintainability
+
+**KB Coordination:**
+- UI/UX writes design patterns to `frontend-patterns.md`
+- Matterport SDK writes integration patterns
+- JavaScript writes data flow patterns
+
+---
+
+### Pattern 5: Full-Stack Feature with Deployment
+
+**Flow:**
+```
+Backend Architect → [Backend Design + UI/UX] → [FastAPI + JavaScript] → Docker Specialist → Code Reviewer
+```
+
+**Example:** Complete new feature with deployment
+1. Architect: Overall design
+2. Design + UI/UX: Parallel schema and UI design
+3. FastAPI + JavaScript: Parallel implementation
+4. Docker: Update deployment config
+5. Code Reviewer: Final validation
+
+**KB Coordination:**
+- All specialists read/write to relevant KB files
+- Docker ensures deployment reflects KB patterns
+- Code Reviewer ensures consistency across all domains
+
+---
+
+### How Specialists Use KB
+
+**Before starting work:**
+1. Read relevant pattern files for conventions
+2. Check `decisions.log` for precedent
+3. Review `dependencies.json` for conflicts
+
+**During work:**
+4. Follow established patterns from KB
+5. Update patterns if establishing new conventions
+6. Log interim decisions
+
+**After completing work:**
+7. Write final decisions to `decisions.log`
+8. Update pattern files with new conventions
+9. Update `dependencies.json` if contracts changed
+
+**Example KB workflow:**
+```
+FastAPI Specialist starts work:
+→ Reads kb/backend-patterns.md: "Use snake_case for endpoints"
+→ Reads kb/api-contracts.md: "Auth returns {token, expires_at}"
+→ Implements /auth/login following conventions
+→ Writes to kb/decisions.log: "Used bcrypt cost factor 12"
+→ Updates kb/dependencies.json: "/auth/login → frontend/auth.js"
+```
+
+---
+
 ## Creating a New Specialist
 
-This guide shows you how to create a custom specialist agent for the Multi-Agent Dev Team plugin.
+This section shows you how to create a custom specialist agent for the Multi-Agent Dev Team plugin.
 
 ## Directory Structure
 
