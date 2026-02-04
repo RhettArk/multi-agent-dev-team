@@ -1,14 +1,69 @@
 # Multi-Agent Dev Team Plugin
 
-Domain specialist agents that coordinate through shared knowledge to prevent drift.
+**Version 1.0.0** - Full multi-agent coordination system with auto-planning, parallel execution, and adaptive error recovery.
 
-## Skills
+## Overview
 
-- `/dev-team` - Coordinator for complex multi-domain tasks
-- `/backend-architect` - System design and architectural patterns
-- `/fastapi-specialist` - FastAPI endpoint implementation
-- `/code-reviewer` - Code simplification and dead code removal
+A production-ready multi-agent system where a central coordinator manages 12 specialized agents to complete complex development tasks. Features intelligent planning, concurrent execution, comprehensive validation, and automatic error recovery.
 
-## MVP Scope
+## Quick Start
 
-Limited to 4 specialists for validation. See docs/plans/2026-02-03-mvp-implementation.md.
+```bash
+# Invoke the coordinator with a natural language request
+/dev-team "Add user authentication to the API with JWT tokens"
+
+# The system will:
+# 1. Auto-generate an implementation plan by consulting specialists
+# 2. Execute tasks in parallel (respecting dependencies)
+# 3. Run multi-stage checkpoints (validation → peer review → KB sync)
+# 4. Recover automatically from failures (loop-back, escalation, or abort)
+```
+
+## Core Features
+
+- **Auto-Planning**: Natural language → DAG generation via specialist consultation
+- **Parallel Execution**: Up to 3 concurrent tasks with dependency resolution
+- **Advanced Checkpoints**: Multi-stage validation with peer review and KB sync
+- **Error Recovery**: Automatic loop-back, escalation, or abort with state rollback
+- **Shared Knowledge**: File-based KB for cross-specialist context and decisions
+
+## 12 Specialists (+ 1 Coordinator)
+
+**Core Coordination:**
+- `/dev-team` - Orchestrates all specialists with auto-planning and parallel execution
+
+**Backend Development:**
+- `/backend-architect` - System design, service boundaries, API contracts
+- `/backend-design` - Architecture patterns, service layer, caching strategies
+- `/fastapi-specialist` - FastAPI routing, dependency injection, testing
+- `/db-migration` - Supabase migrations, RLS policies, schema optimization
+- `/openai-agents-sdk` - OpenAI Agents SDK integration, Swarm patterns
+
+**Frontend Development:**
+- `/ui-ux` - User experience, accessibility, responsive design
+- `/javascript-specialist` - Modern JS, async/await, DOM manipulation
+- `/matterport-sdk` - Matterport SDK integration, camera controls, tags
+- `/chat-specialist` - SSE streaming, message rendering, markdown support
+- `/code-quality-frontend` - ESLint, dead code removal, bundle optimization
+
+**DevOps & Quality:**
+- `/docker-specialist` - Dockerfile optimization, Docker Compose, deployment
+- `/code-reviewer` - Code quality validation, complexity reduction, best practices
+
+## Documentation
+
+- `docs/USER_GUIDE.md` - How to use the dev-team coordinator
+- `docs/SPECIALIST_GUIDE.md` - How to create new specialists
+- `docs/ARCHITECTURE.md` - System design and data flow
+- `CHANGELOG.md` - Version history and migration guide
+
+## Requirements
+
+- Python 3.10+
+- PyYAML 6.0+
+- jsonschema 4.17+
+- pytest 7.4+ (for testing)
+
+## License
+
+MIT
