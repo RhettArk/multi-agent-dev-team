@@ -4,7 +4,7 @@
 from .auto_planner import auto_plan_feature, analyze_domains
 from .specialist_consultation import consult_specialist, consult_all_relevant_specialists
 from .checkpoint_validator import CheckpointValidator, run_checkpoint
-from .dag_parser import parse_task_list, get_ready_tasks, update_task_status
+from .dag_parser import parse_task_list, get_ready_tasks, update_task_status, detect_cycles, CircularDependencyError
 from .error_recovery import ErrorRecovery, FailureType, handle_task_failure
 from .kb_manager import initialize_kb, verify_kb_exists, log_decision
 from .parallel_executor import ParallelExecutor, execute_plan_parallel
@@ -19,6 +19,8 @@ __all__ = [
     'parse_task_list',
     'get_ready_tasks',
     'update_task_status',
+    'detect_cycles',
+    'CircularDependencyError',
     'ErrorRecovery',
     'FailureType',
     'handle_task_failure',

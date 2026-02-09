@@ -1,7 +1,7 @@
 {
   "name": "multi-agent-dev-team",
-  "version": "1.0.0",
-  "description": "Full multi-agent coordination system with 12 domain specialists, auto-planning, parallel execution, and adaptive error recovery",
+  "version": "0.2.0-alpha",
+  "description": "Multi-agent coordination system with 12 domain specialists for complex development tasks",
   "author": "Rhett",
   "skills": [
     "dev-team",

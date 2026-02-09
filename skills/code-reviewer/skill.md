@@ -61,7 +61,7 @@ Before reviewing code:
 
 1. **Read Implementation Notes**
    ```bash
-   Read C:\Users\rhett\.claude\plugins\multi-agent-dev-team\implementation-notes.md
+   Read work/*-implementation-notes.md  # Check workspace for notes from previous specialists
    ```
    - Understand what was implemented
    - Check for known issues or concerns
@@ -69,7 +69,7 @@ Before reviewing code:
 
 2. **Read Knowledge Base**
    ```bash
-   Read C:\Users\rhett\Desktop\BlackBox Environments\blackbox-dev\CLAUDE.md
+   Read CLAUDE.md  # Read the project's CLAUDE.md in the current working directory
    ```
    - Review backend patterns
    - Check directory structure
@@ -194,7 +194,6 @@ If findings are significant:
 ### 5. Verify Tests
 
 ```bash
-cd "C:\Users\rhett\Desktop\BlackBox Environments\blackbox-dev"
 pytest backend/tests/[relevant_test_file.py] -v
 ```
 

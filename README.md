@@ -1,10 +1,12 @@
 # Multi-Agent Dev Team Plugin
 
-**Version 1.0.0** - Full multi-agent coordination system with auto-planning, parallel execution, and adaptive error recovery.
+**Version 0.2.0-alpha** - Multi-agent coordination system with 12 domain specialists for complex development tasks.
 
 ## Overview
 
-A production-ready multi-agent system where a central coordinator manages 12 specialized agents to complete complex development tasks. Features intelligent planning, concurrent execution, comprehensive validation, and automatic error recovery.
+A multi-agent system where a central coordinator manages 12 specialized agents to complete complex development tasks. Features planning via specialist consultation, parallel execution via Claude Code's Task tool, validation checkpoints, and error recovery.
+
+> **Note:** This is an alpha release. Core coordination logic is implemented as prompt-based instructions for Claude Code's agent system. The `utils/` Python modules provide supporting DAG parsing and KB management but are not directly executed by the plugin runtime.
 
 ## Quick Start
 

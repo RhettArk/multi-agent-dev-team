@@ -84,7 +84,7 @@ Before reviewing frontend code:
 
 2. **Read Frontend Knowledge Base**
    ```bash
-   Read C:\Users\rhett\Desktop\BlackBox Environments\blackbox-dev\CLAUDE.md
+   Read CLAUDE.md  # Read the project's CLAUDE.md in the current working directory
    ```
    - Review frontend architecture section
    - Check directory structure (frontend/src/)

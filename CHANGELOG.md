@@ -5,11 +5,38 @@ All notable changes to the Multi-Agent Dev Team Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-02-04
+## [0.2.0-alpha] - 2026-02-09
 
-### Major Release - Full Multi-Agent Coordination System
+### Architecture Rework - Claude Code Plugin Alignment
 
-This release transforms the MVP into a production-ready multi-agent system with intelligent planning, parallel execution, comprehensive checkpoints, and adaptive error recovery.
+This release rearchitects the plugin to align with how Claude Code plugins actually work (prompt-based skills, not Python runtime).
+
+### Changed
+
+- **dev-team/skill.md**: Rewritten from Python pseudocode to step-by-step prompt instructions using Claude Code's Task tool for parallel specialist invocation
+- **dag_parser.py**: Added circular dependency detection (`CircularDependencyError`) with DFS cycle detection — previously circular deps caused silent infinite loops
+- **dag_parser.py**: Fixed status value mismatch — `get_ready_tasks()` now accepts both `"pending"` and `"ready"` statuses; dependency checks accept `"completed"` and `"validated"`
+- **parallel_executor.py**: `is_plan_complete()` now recognizes `"validated"` status from checkpoint_validator
+- **db-migration/skill.md**: Rewritten from Alembic/SQLAlchemy patterns to Supabase SQL DDL with RLS policies, CHECK constraints, and UUID primary keys
+- **kb_manager.py**: Fixed relative path issue — KB directory now resolves relative to plugin root via `Path(__file__)`, not CWD
+- **code-reviewer/skill.md**: Removed hardcoded `C:\Users\rhett\` paths, replaced with relative `CLAUDE.md` and `work/` references
+- **code-quality-frontend/skill.md**: Same hardcoded path fix
+- **Version**: Corrected from 1.0.0 to 0.2.0-alpha to reflect actual maturity (core specialist invocation is still placeholder)
+
+### Known Limitations
+
+- `utils/` Python modules (auto_planner, parallel_executor, checkpoint_validator, error_recovery, specialist_consultation) contain placeholder implementations — specialist invocation returns hardcoded strings
+- The plugin's real coordination logic lives in the skill.md prompt instructions, not the Python code
+- No `requirements.txt` or `pyproject.toml` yet
+- Schemas in `schemas/` are defined but never validated against
+
+---
+
+## [1.0.0] - 2026-02-04 [RETRACTED — see 0.2.0-alpha]
+
+### Original Release Notes (preserved for history)
+
+This release was originally labeled as production-ready but contained placeholder implementations for core features.
 
 ### Added - Core Intelligence Features
 
@@ -223,19 +250,15 @@ This release transforms the MVP into a production-ready multi-agent system with 
    result = await validator.run_checkpoint(task_id, result)
    ```
 
-### Performance Improvements
+### Performance Improvements (Planned)
 
-- **3x faster execution** via parallel task processing (max 3 concurrent)
-- **50% reduction in planning time** via specialist consultation caching
-- **80% fewer user interruptions** via automatic validation and peer review
-- **Near-zero checkpoint overhead** via fast automatic validation
+- Parallel task processing via Claude Code's Task tool (up to 3 concurrent)
+- Specialist consultation during planning phase
 
-### Security
+### Security (Planned)
 
-- Input validation on all specialist invocations
-- Sandbox isolation for specialist execution
-- Rate limiting on auto-planning requests
-- Error message sanitization to prevent info leakage
+- Input validation on specialist invocations
+- Error message sanitization
 
 ### Known Issues
 
@@ -363,4 +386,4 @@ tests/                   # Test suite
 
 ---
 
-**Note:** Version 1.0.0 represents a production-ready system suitable for complex multi-domain development tasks. All core features are stable and thoroughly tested. Future versions will add convenience features and integrations while maintaining backward compatibility.
+**Note:** Version 0.2.0-alpha represents a working proof-of-concept. The skill.md instructions provide real coordination capability when used with Claude Code's Task tool. The Python utility modules provide supporting logic (DAG parsing, KB management) but specialist invocation stubs need to be replaced with real implementations or removed in favor of pure prompt-based coordination.

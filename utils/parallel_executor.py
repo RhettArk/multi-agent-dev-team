@@ -131,7 +131,7 @@ class ParallelExecutor:
     def is_plan_complete(self) -> bool:
         """Check if all tasks are completed or blocked."""
         statuses = [task['status'] for task in self.plan['tasks'].values()]
-        return all(s in ['completed', 'failed', 'blocked'] for s in statuses)
+        return all(s in ['completed', 'failed', 'blocked', 'validated'] for s in statuses)
 
 
 async def execute_plan_parallel(plan: Dict) -> Dict:
