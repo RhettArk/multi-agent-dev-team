@@ -52,20 +52,12 @@ def test_kb_initialization():
     kb_dir = TEST_DIR / "kb"
     kb_dir.mkdir(parents=True, exist_ok=True)
 
-    # Change to test directory
-    import os
-    original_dir = os.getcwd()
-    os.chdir(TEST_DIR)
+    initialize_kb(kb_dir=kb_dir)
 
-    try:
-        initialize_kb()
-
-        assert verify_kb_exists()
-        assert (Path("kb") / "backend-patterns.md").exists()
-        assert (Path("kb") / "decisions.log").exists()
-        assert (Path("kb") / "dependencies.json").exists()
-    finally:
-        os.chdir(original_dir)
+    assert verify_kb_exists(kb_dir=kb_dir)
+    assert (kb_dir / "backend-patterns.md").exists()
+    assert (kb_dir / "decisions.log").exists()
+    assert (kb_dir / "dependencies.json").exists()
 
 
 def test_decision_logging():
@@ -73,28 +65,23 @@ def test_decision_logging():
     kb_dir = TEST_DIR / "kb"
     kb_dir.mkdir(parents=True, exist_ok=True)
 
-    import os
-    original_dir = os.getcwd()
-    os.chdir(TEST_DIR)
+    initialize_kb(kb_dir=kb_dir)
 
-    try:
-        initialize_kb()
+    log_decision(
+        specialist="backend-architect",
+        decision="Use JWT for authentication",
+        rationale="Industry standard, stateless, scalable",
+        affects=["backend-api", "frontend-auth"],
+        ref="kb/backend-patterns.md#auth",
+        kb_dir=kb_dir,
+    )
 
-        log_decision(
-            specialist="backend-architect",
-            decision="Use JWT for authentication",
-            rationale="Industry standard, stateless, scalable",
-            affects=["backend-api", "frontend-auth"],
-            ref="kb/backend-patterns.md#auth"
-        )
-
-        log_content = (Path("kb") / "decisions.log").read_text()
-        assert "backend-architect" in log_content
-        assert "Use JWT for authentication" in log_content
-        assert "Industry standard" in log_content
-    finally:
-        os.chdir(original_dir)
+    log_content = (kb_dir / "decisions.log").read_text()
+    assert "backend-architect" in log_content
+    assert "Use JWT for authentication" in log_content
+    assert "Industry standard" in log_content
 
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
