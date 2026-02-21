@@ -2,23 +2,7 @@
   "name": "multi-agent-dev-team",
   "version": "0.2.0-alpha",
   "description": "Multi-agent coordination system with 12 domain specialists for complex development tasks",
-  "author": "Rhett",
-  "skills": [
-    "dev-team",
-    "openai-agents-sdk",
-    "backend-architect",
-    "fastapi-specialist",
-    "backend-design",
-    "db-migration",
-    "code-reviewer",
-    "docker-specialist",
-    "ui-ux",
-    "code-quality-frontend",
-    "matterport-sdk",
-    "javascript-specialist",
-    "chat-specialist"
-  ],
-  "requires": {
-    "claude-code": ">=1.0.0"
+  "author": {
+    "name": "RhettArk"
   }
 }
